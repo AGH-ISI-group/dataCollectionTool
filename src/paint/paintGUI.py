@@ -15,7 +15,9 @@ class PaintGUI:
         self.header = None
         self.entry = None
         self.header_label = None
+        self.footer = None
         self.footer_label = None
+        self.footer_info = None
 
         # main parts:
         self.root = tk.Tk()
@@ -36,6 +38,7 @@ class PaintGUI:
         self.symbol_name = None
         self.images = []
         self.previous_event = None
+        self.number_of_unsaved_photos = 0
 
         create_directory(Parameters.DIRECTORY)
 
@@ -68,9 +71,18 @@ class PaintGUI:
 
     def set_footer(self):
 
-        self.footer_label = tk.Label(self.root, text="Your image will be saved to:  ", font=("Arial", 18))
-        self.footer_label.configure(pady=10)
-        self.footer_label.pack()
+        self.footer = tk.Frame(self.root)
+        self.footer.configure(pady=10)
+        self.footer.columnconfigure(0, weight=1)
+        self.footer.columnconfigure(1, weight=1)
+
+        self.footer_info = tk.Label(self.footer, text="Unsaved images: 0", font=("Arial", 18))
+        self.footer_info.grid(row=0, column=0, sticky=tk.W + tk.E)
+
+        self.footer_label = tk.Label(self.footer, text="Your image will be saved to:  ", font=("Arial", 18))
+        self.footer_label.grid(row=0, column=1, sticky=tk.W + tk.E)
+
+        self.footer.pack(fill="x")
 
     def paint_circle(self, event):
 
@@ -128,7 +140,7 @@ class PaintGUI:
         self.state = State.PAINING
 
         path = os.path.join(Parameters.DIRECTORY, symbol_name + ".pkl")
-        self.footer_label.configure(text="Your image will be saved to: " + path)
+        self.footer_label.configure(text="Your images will be saved to: " + path)
 
     def change_image_size(self, x, y):
 
@@ -174,6 +186,8 @@ class PaintGUI:
             self.info_about_photo = []
             self.previous_event = None
             self.restart_image_size()
+            self.number_of_unsaved_photos += 1
+            self.footer_info.configure(text="Unsaved images: " + str(self.number_of_unsaved_photos), fg="red")
             print("image has been added")
 
         else:
@@ -208,10 +222,13 @@ class PaintGUI:
 
             images_to_save = loaded_images + self.images
 
-            print("your data has been saved")
-
             with open(path, "wb") as f:
                 pickle.dump(images_to_save, f)
+
+            self.footer_info.configure(text="Unsaved images: 0", fg="black")
+            self.number_of_unsaved_photos = 0
+            self.images = []
+            print("your data has been saved")
 
     def start(self):
         self.root.mainloop()
