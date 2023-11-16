@@ -177,7 +177,7 @@ class PaintGUI:
                 print("You create blank image. It will not be added")
                 return
 
-            np_img = process_image(self.info_about_photo, self.image_size)
+            np_img = process_image(self.info_about_photo, self.image_size, Parameters.RADIUS)
 
             self.images.append(np_img)
 

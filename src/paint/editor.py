@@ -4,25 +4,27 @@ import numpy as np
 import math
 
 
-def process_image(info_about_photo, img_size):
-
-    image = Image.new("L", (Parameters.WIDTH, Parameters.HEIGHT), 255)
-    draw = ImageDraw.Draw(image)
+def process_image(info_about_photo, img_size, canvas_r):
 
     img_height = img_size["bottom"] - img_size["top"] + 1
     img_width = img_size["right"] - img_size["left"] + 1
+
     correct_size = max(img_height, img_width)
 
     r = int((correct_size * Parameters.RADIUS_PERCENTAGE) / (100 - 2 * Parameters.RADIUS_PERCENTAGE))
+    diff_r = r - canvas_r
+
+    image = Image.new("L", (Parameters.WIDTH + 2 * diff_r, Parameters.HEIGHT + 2 * diff_r), 255)
+    draw = ImageDraw.Draw(image)
 
     number_of_pixels = len(info_about_photo)
 
     for i in range(len(info_about_photo)):
 
-        info = info_about_photo[i]
+        info = info_about_photo[len(info_about_photo) - 1 - i]
 
-        x = info[0]
-        y = info[1]
+        x = info[0] + diff_r
+        y = info[1] + diff_r
         index = info[2]
 
         color = int((index / number_of_pixels) * (Parameters.MAX_COLOR - Parameters.MIN_COLOR) + Parameters.MIN_COLOR)
@@ -35,10 +37,10 @@ def process_image(info_about_photo, img_size):
 
         if i > 0:
 
-            info_prev = info_about_photo[i - 1]
+            info_prev = info_about_photo[len(info_about_photo) - i]
 
-            x_prev = info_prev[0]
-            y_prev = info_prev[1]
+            x_prev = info_prev[0] + diff_r
+            y_prev = info_prev[1] + diff_r
 
             points = find_magic_points(x, y, x_prev, y_prev, r)
 
