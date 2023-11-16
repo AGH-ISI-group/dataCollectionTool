@@ -179,7 +179,7 @@ class PaintGUI:
 
             np_img = process_image(self.info_about_photo, self.image_size, Parameters.RADIUS)
 
-            self.images.append(np_img)
+            self.images.append((self.symbol_name, np_img))
 
             self.cnv.delete("all")
             self.index = 0
