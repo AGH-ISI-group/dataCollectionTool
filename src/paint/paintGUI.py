@@ -18,6 +18,7 @@ class PaintGUI:
         self.footer = None
         self.footer_label = None
         self.footer_info = None
+        self.footer_arrow = None
 
         # main parts:
         self.root = tk.Tk()
@@ -45,7 +46,7 @@ class PaintGUI:
     def set_header(self):
 
         self.root.title("Creator of symbols")
-        self.root.geometry(str(Parameters.WIDTH + 10) + "x" + str(Parameters.HEIGHT + 110))
+        self.root.geometry(str(Parameters.WIDTH + 10) + "x" + str(Parameters.HEIGHT + 130))
         self.root.bind('<Control-s>', self.save_data)
         self.root.bind('<Command-s>', self.save_data)
 
@@ -72,15 +73,20 @@ class PaintGUI:
     def set_footer(self):
 
         self.footer = tk.Frame(self.root)
-        self.footer.configure(pady=10)
+        self.footer.configure(pady=10, padx=5)
         self.footer.columnconfigure(0, weight=1)
         self.footer.columnconfigure(1, weight=1)
+        self.footer.columnconfigure(2, weight=1)
 
-        self.footer_info = tk.Label(self.footer, text="Unsaved images: 0", font=("Arial", 18))
+        self.footer_info = tk.Label(self.footer, text="Unsaved images: 0", font=("Arial", 18), anchor="w")
         self.footer_info.grid(row=0, column=0, sticky=tk.W + tk.E)
 
-        self.footer_label = tk.Label(self.footer, text="Your image will be saved to:  ", font=("Arial", 18))
+        self.footer_label = tk.Label(self.footer, text="Your image will be saved to:  ", font=("Arial", 18), anchor="w")
         self.footer_label.grid(row=0, column=1, sticky=tk.W + tk.E)
+
+        self.footer_arrow = tk.Button(self.footer, text="\u2BA8", font=("Arial", 18), bg="MistyRose2",
+                                      command=self.undo_your_photo)
+        self.footer_arrow.grid(row=0, column=2, sticky=tk.W + tk.E)
 
         self.footer.pack(fill="x")
 
@@ -192,6 +198,18 @@ class PaintGUI:
 
         else:
             print("Set The Symbol CLass!")
+
+    def undo_your_photo(self):
+
+        if self.number_of_unsaved_photos == 0:
+            print("there is no images to undo")
+            return
+
+        self.images.pop()
+
+        self.number_of_unsaved_photos -= 1
+        self.footer_info.configure(text="Unsaved images: " + str(self.number_of_unsaved_photos), fg="red")
+        print("image has been deleted")
 
     def image_exits(self):
 
